@@ -1,3 +1,4 @@
+import logging
 import shutil
 
 from hcleanerlib.utils.explorer import Explorer
@@ -6,31 +7,49 @@ from hcleanerlib.utils.path import Path
 
 class Simplify:
     def __init__(self, config_type):
+        self.__parent: Path = None
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder, apply, sub):
-        """Remove empty folders, delete unwanted elements"""
+    def exec(self, folder, apply=False):
+        """
+        Crawl direct sub folders, extract videos when alone in folder, and remove empty folders.
+        """
 
-        self.execute(folder, apply)
+        self.__parent = Path(folder)
+        for child_folder in self.__parent.folders():
+            for log in self.__extract_folder(child_folder, apply):
+                yield log
+            for log in self.__extract_video(child_folder, apply):
+                yield log
+            for log in self.__delete_when_empty(child_folder, apply):
+                yield log
 
-        if sub:
-            for element in Path(folder).folders():
-                self.execute(element, apply)
+    def __extract_video(self, folder, apply):
+        current = Path(folder)
+        if self.__explorer.is_video_only(current.fullpath()):
+            if apply is False:
+                yield current.name() + " is video only, it can be emptied"
+            else:
+                for video in current.files():
+                    shutil.move(video, self.__parent.fullpath())
+                    yield video + " has been moved to " + self.__parent.fullpath() + video
 
-    def execute(self, folder, apply):
-        """When a folder contains only a subfolder with the same name, move the subfolder's content"""
-        folder = Path(folder)
-        if folder.count() == 1 and len(folder.folders()) == 1:
-            subfolder = Path(folder.folders()[0])
-            if subfolder.name() == folder.name() and apply:
-                for element in subfolder.files():
-                    shutil.move(element, folder.fullpath())
-                for element in subfolder.folders():
-                    shutil.move(element, folder.fullpath())
-                self.delete(subfolder.fullpath())
+    def __extract_folder(self, folder, apply):
+        current = Path(folder)
+        if current.count() == 1 and len(current.folders()) == 1:
+            if current.name() == Path(current.folders()[0]).name():
+                if apply is False:
+                    yield current.name() + " has a folder with the same name, it can be simplified"
+                else:
+                    Path(current.folders()[0]).move(self.__parent.fullpath())
+                    yield current.name() + " has been moved into its parent"
 
-    def delete(self, folder):
-        """Delete folder when empty"""
-        path = Path(folder)
-        if path.count() == 0:
-            self.__explorer.delete_folder(folder)
+    def __delete_when_empty(self, folder, apply):
+        current = Path(folder)
+        if current.count() == 0:
+            if apply is False:
+                yield current.name() + " is empty, can be delete"
+            else:
+                self.__explorer.delete_folder(current.fullpath())
+                yield current.name() + " has been deleted"
+
