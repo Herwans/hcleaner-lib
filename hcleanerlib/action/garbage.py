@@ -1,4 +1,3 @@
-import logging
 import os
 import pathlib
 import re
@@ -14,16 +13,18 @@ class Garbage:
         self.__explorer = Explorer(config_type)
         self.__to_delete = self.__config.get_delete_pattern()
 
-    def exec(self, folder, apply):
+    def exec(self, folder, apply=False, subdirectories=False):
         """Remove empty folders, delete unwanted elements"""
         for log in self.__clean(folder, apply):
             yield log
 
-        #if sub:
-        #    for element in Path(folder).folders():
-        #        self.clean(element, apply)
-        #        self.move(element, apply)
-        #        self.delete(element, apply)
+        if subdirectories:
+            for element in Path(folder).folders():
+                for log in self.__clean(element, apply):
+                    yield log
+                for log in self.__move(element, apply):
+                    yield log
+                self.__delete(element, apply)
 
     def __clean(self, folder, apply):
         """Remove elements which match regex to be deleted"""
@@ -64,7 +65,7 @@ class Garbage:
     def __delete(self, folder, apply):
         """Delete folder when empty"""
         path = Path(folder)
-        if path.count() == 0:
+        if path.count() == 0 and apply:
             self.__explorer.delete_folder(folder)
 
     def __is_to_delete(self, element):
