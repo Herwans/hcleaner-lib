@@ -1,4 +1,3 @@
-import logging
 import shutil
 
 from hcleanerlib.utils.explorer import Explorer
