@@ -12,43 +12,45 @@ class Integrity:
     def __init__(self, config_type):
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder, delete, sub, verbose):
+    def exec(self, folder, delete):
         """Check file integrity"""
-        logging.info(f"{folder} folder content will be checked")
+        yield f"{folder} folder content will be checked"
 
-        if sub:
-            for sub_folder in os.listdir(folder):
-                path = f"{folder}/{sub_folder}"
-                if os.path.isdir(path):
-                    corrupted, total = self.check_folder_content(path, verbose)
-                    if corrupted > 0:
-                        logging.info(f"{sub_folder} contains {corrupted} corrupted images ({corrupted / total * 100}%)")
-                        if delete and corrupted == total:
-                            if self.delete_corrupted_folder(path, corrupted, total):
-                                logging.info(f"{sub_folder} deleted")
-                            else:
-                                logging.info(f"{sub_folder} kept")
+        corrupted, total = self.check_folder_content(folder)
+        if corrupted > 0:
+            yield f"{folder} contains {corrupted} corrupted images ({corrupted / total * 100}%)"
+            if delete and corrupted == total:
+                if self.delete_corrupted_folder(folder, corrupted, total):
+                    yield f"{folder} deleted"
+                else:
+                    yield f"{folder} kept"
         else:
-            corrupted, total = self.check_folder_content(folder, verbose)
-            if corrupted > 0:
-                logging.info(f"{folder} contains {corrupted} corrupted images ({corrupted / total * 100}%)")
-                if delete and corrupted == total:
-                    if self.delete_corrupted_folder(folder, corrupted, total):
-                        logging.info(f"{folder} deleted")
-                    else:
-                        logging.info(f"{folder} kept")
+            yield "Nothing"
+        # if sub:
+        #     for sub_folder in os.listdir(folder):
+        #         path = f"{folder}/{sub_folder}"
+        #         if os.path.isdir(path):
+        #             corrupted, total = self.check_folder_content(path, verbose)
+        #             if corrupted > 0:
+        #                 yield f"{sub_folder} contains {corrupted} corrupted images ({corrupted / total * 100}%)")
+        #                 if delete and corrupted == total:
+        #                     if self.delete_corrupted_folder(path, corrupted, total):
+        #                         yield f"{sub_folder} deleted")
+        #                     else:
+        #                         yield f"{sub_folder} kept")
+        # else:
+
 
         return
 
-    def check_folder_content(self, folder, verbose):
+    def check_folder_content(self, folder):
         corrupted = 0
         total_files = 0
         for file in os.listdir(folder):
             if file == "meta.json":
                 continue
             total_files = total_files + 1
-            if self.__explorer.is_image(f"{folder}/{file}") and self.__explorer.is_image_corrupted(f"{folder}/{file}",
-                                                                                                   verbose):
+            if self.__explorer.is_image(f"{folder}/{file}") and self.__explorer.is_image_corrupted(f"{folder}/{file}"):
                 corrupted = corrupted + 1
 
         return corrupted, total_files
@@ -57,7 +59,7 @@ class Integrity:
         for element in os.listdir(folder):
             if element != "meta.json" and self.__explorer.is_image(element) is False and os.path.isfile(
                     element) is False:
-                logging.info(element)
+                yield element
                 return False
         meta = f"{folder}/meta.json"
         metas = f"{pathlib.Path.home()}/.horn/meta_delete.json"
