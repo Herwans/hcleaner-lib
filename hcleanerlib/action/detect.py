@@ -29,12 +29,12 @@ class Detect:
 
         for title, elements in duplicate_folders.items():
             if len(elements) > 1:
-                logging.warning(title)
+                yield title
                 for element in elements:
-                    logging.info("> " + element)
+                    yield "> " + element
 
         for title, elements in duplicate_files.items():
             if len(elements) > 1:
-                logging.warning(title)
+                yield title
                 for element in elements:
-                    logging.info("> " + element)
+                    yield "> " + element
