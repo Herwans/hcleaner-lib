@@ -14,27 +14,28 @@ class Garbage:
         self.__explorer = Explorer(config_type)
         self.__to_delete = self.__config.get_delete_pattern()
 
-    def exec(self, folder, apply, sub):
+    def exec(self, folder, apply):
         """Remove empty folders, delete unwanted elements"""
-        self.clean(folder, apply)
+        for log in self.__clean(folder, apply):
+            yield log
 
-        if sub:
-            for element in Path(folder).folders():
-                self.clean(element, apply)
-                self.move(element, apply)
-                self.delete(element, apply)
+        #if sub:
+        #    for element in Path(folder).folders():
+        #        self.clean(element, apply)
+        #        self.move(element, apply)
+        #        self.delete(element, apply)
 
-    def clean(self, folder, apply):
+    def __clean(self, folder, apply):
         """Remove elements which match regex to be deleted"""
         for element in Path(folder).files():
-            if self.is_to_delete(element):
+            if self.__is_to_delete(element):
                 if apply:
                     os.remove(element)
-                    logging.info(f"{element} deleted")
+                    yield f"{element} deleted"
                 else:
-                    logging.info(f"{element} is candidate to deletion")
+                    yield f"{element} is candidate to deletion"
 
-    def move(self, folder, apply):
+    def __move(self, folder, apply):
         """Empty folder when no other files nor folders present"""
         path = Path(folder)
 
@@ -54,19 +55,19 @@ class Garbage:
                     if not pathlib.Path(f"{folder}{os.sep}..{os.sep}{current.name()}").exists():
                         current.move(f"..{os.sep}{current.name()}")
                 if path.count() == 0:
-                    logging.info(f"{folder} has been emptied")
+                    yield f"{folder} has been emptied"
                 else:
-                    logging.info(f"{folder} can't be emptied")
+                    yield f"{folder} can't be emptied"
             else:
-                logging.info(f"{folder} is candidate to simplification")
+                yield f"{folder} is candidate to simplification"
 
-    def delete(self, folder, apply):
+    def __delete(self, folder, apply):
         """Delete folder when empty"""
         path = Path(folder)
         if path.count() == 0:
             self.__explorer.delete_folder(folder)
 
-    def is_to_delete(self, element):
+    def __is_to_delete(self, element):
         for pattern in self.__to_delete:
             if re.search(pattern, element) is not None:
                 return True
