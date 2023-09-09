@@ -6,11 +6,18 @@ import pathlib
 from PIL import Image
 
 from hcleanerlib.utils.config import Configuration
+from hcleanerlib.utils.path import Path
 
 
 class Explorer:
     def __init__(self, config_type):
         self.__config = Configuration(config_type)
+
+    def dispatch(self, element: Path):
+        if self.is_image(element.fullpath()) or (element.is_dir() and self.is_image_only(element.fullpath())):
+            element.move(f"{self.__config.get_images_location()}{os.sep}{element.name()}")
+        elif self.is_video(element.fullpath()) or (element.is_dir() and self.is_video_only(element.fullpath())):
+            element.move(f"{self.__config.get_videos_location()}{os.sep}{element.name()}")
 
     def is_image(self, image_path):
         image_extensions = self.__config.get_image_extensions()

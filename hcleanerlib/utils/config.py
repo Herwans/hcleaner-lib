@@ -39,3 +39,9 @@ class Configuration:
     def get_delete_pattern(self):
         return self.configData["to_delete"]
 
+    def get_videos_location(self):
+        return self.configData["dispatch"]["videos"]
+
+    def get_images_location(self):
+        return self.configData["dispatch"]["images"]
+

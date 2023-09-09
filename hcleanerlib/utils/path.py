@@ -1,5 +1,6 @@
 import os
 import pathlib
+import shutil
 
 
 class Path:
@@ -57,7 +58,7 @@ class Path:
         else:
             location = destination
 
-        pathlib.Path(self.fullpath()).rename(location)
+        shutil.move(self.fullpath(), location)
 
     def exists(self):
         return os.path.exists(self.fullpath())
