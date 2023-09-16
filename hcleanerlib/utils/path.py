@@ -1,12 +1,38 @@
 import os
 import pathlib
+import re
 import shutil
 
 
 class Path:
-    def __init__(self, fullpath):
-        self.__fullpath = fullpath
-        self.__is_dir = os.path.isdir(fullpath)
+    def __init__(self, path: str):
+        if os.path.exists(path) is False:
+            raise FileNotFoundError(f"No element found for path {path}")
+
+        if not self.__is_absolute(path):
+            self.__fullpath = self.__simplify(os.path.join(os.getcwd(), path))
+        else:
+            self.__fullpath = self.__simplify(path)
+
+        self.__is_dir = os.path.isdir(self.__fullpath)
+
+    @staticmethod
+    def __is_absolute(path: str):
+        return path.startswith('/') or re.match("^[a-zA-Z]:[/\\\\]", path) or path.startswith('\\\\')
+
+    @staticmethod
+    def __simplify(path: str):
+        parts = path.split('\\')
+        result_array = []
+        for part in parts:
+            if part == "..":
+                result_array = result_array[:-1]
+            elif part == ".":
+                continue
+            else:
+                result_array.append(part)
+
+        return "\\".join(result_array)
 
     def fullpath(self):
         return self.__fullpath
@@ -52,16 +78,22 @@ class Path:
                     folders.append(folder)
         return folders
 
-    def move(self, destination):
-        if destination.startswith(".." + os.sep):
-            location = os.path.join(os.sep.join(self.path().split(os.sep)[0:-1]), destination.split(os.sep)[1])
+    def move(self, destination: str):
+        current = self.fullpath()
+
+        if not self.__is_absolute(destination):
+            destination = os.path.join(self.path(), destination)
+
+        destination = self.__simplify(destination)
+
+        new_location = os.path.join(destination, self.name())
+
+        if os.path.exists(new_location):
+            raise FileExistsError("An element with the same name already exist at this location")
         else:
-            location = destination
-
-        shutil.move(self.fullpath(), location)
-
-    def exists(self):
-        return os.path.exists(self.fullpath())
+            os.makedirs(destination, exist_ok=True)
+            self.__fullpath = new_location
+            shutil.move(current, self.fullpath())
 
     def name(self):
         return pathlib.Path(self.fullpath()).name
