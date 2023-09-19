@@ -1,3 +1,4 @@
+import logging
 import os
 import pathlib
 import re
@@ -45,19 +46,24 @@ class Path:
             return None
         return len(self.files()) + len(self.folders())
 
-    def children(self):
+    def children(self, no_parent=False):
         if not self.is_dir():
             return None
-        return os.listdir(self.fullpath())
+
+        if no_parent:
+            return os.listdir(self.fullpath())
+        else:
+            result = []
+            for element in os.listdir(self.fullpath()):
+                result.append(os.path.join(self.fullpath(), element))
+            return result
 
     def files(self, no_parent=False):
         if not self.is_dir():
             return None
         files = []
         for element in self.children():
-            if element == "meta.json":
-                continue
-            file = f"{self.__fullpath}{os.sep}{element}"
+            file = os.path.join(self.__fullpath, element)
             if os.path.isfile(file):
                 if no_parent:
                     files.append(element)
@@ -70,7 +76,7 @@ class Path:
             return None
         folders = []
         for element in self.children():
-            folder = f"{self.__fullpath}{os.sep}{element}"
+            folder = os.path.join(self.__fullpath, element)
             if os.path.isdir(folder):
                 if no_parent:
                     folders.append(element)
