@@ -30,17 +30,21 @@ class Simplify:
                 yield current.name() + " is video only, it can be emptied"
             else:
                 for video in current.files():
-                    shutil.move(video, self.__parent.fullpath())
-                    yield video + " has been moved to " + self.__parent.fullpath() + video
+                    v = Path(video)
+                    try:
+                        v.move(self.__parent.fullpath())
+                        yield f"{video} has been moved to {v.fullpath()}"
+                    except:
+                        yield f"{video} already exists in {self.__parent.fullpath()}, can't be move"
 
     def __extract_folder(self, folder, apply):
         current = Path(folder)
         if current.count() == 1 and len(current.folders()) == 1:
             if current.name() == Path(current.folders()[0]).name():
                 if apply is False:
-                    yield current.name() + " has a folder with the same name, it can be simplified"
+                    yield f"{current.name()} has a folder with the same name, it can be simplified"
                 else:
-                    Path(current.folders()[0]).move(self.__parent.fullpath())
+                    Path(current.folders()[0]).move(self.__parent.fullpath(), True)
                     yield current.name() + " has been moved into its parent"
 
     def __delete_when_empty(self, folder, apply):
@@ -51,4 +55,3 @@ class Simplify:
             else:
                 self.__explorer.delete_folder(current.fullpath())
                 yield current.name() + " has been deleted"
-

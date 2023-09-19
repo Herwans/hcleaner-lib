@@ -84,7 +84,7 @@ class Path:
                     folders.append(folder)
         return folders
 
-    def move(self, destination: str):
+    def move(self, destination: str, force=False):
         current = self.fullpath()
 
         if not self.__is_absolute(destination):
@@ -94,7 +94,7 @@ class Path:
 
         new_location = os.path.join(destination, self.name())
 
-        if os.path.exists(new_location):
+        if os.path.exists(new_location) and force is False:
             raise FileExistsError("An element with the same name already exist at this location")
         else:
             os.makedirs(destination, exist_ok=True)
