@@ -62,26 +62,20 @@ class Path:
         if not self.is_dir():
             return None
         files = []
-        for element in self.children():
+        for element in self.children(no_parent):
             file = os.path.join(self.__fullpath, element)
             if os.path.isfile(file):
-                if no_parent:
-                    files.append(element)
-                else:
-                    files.append(file)
+                files.append(element)
         return files
 
     def folders(self, no_parent=False):
         if not self.is_dir():
             return None
         folders = []
-        for element in self.children():
+        for element in self.children(no_parent):
             folder = os.path.join(self.__fullpath, element)
             if os.path.isdir(folder):
-                if no_parent:
-                    folders.append(element)
-                else:
-                    folders.append(folder)
+                folders.append(element)
         return folders
 
     def move(self, destination: str, force=False):

@@ -8,10 +8,10 @@ from hcleanerlib.utils.path import Path
 
 class Dispatch:
     def __init__(self, config_type):
-        self.__parent: Path = None
+        self.__parent = None
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder, apply=False):
+    def exec(self, folder):
         current = Path(folder)
         for element in current.children():
             try:

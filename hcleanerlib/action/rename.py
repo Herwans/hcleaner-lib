@@ -1,4 +1,3 @@
-import logging
 import os
 
 from hcleanerlib.utils.applier import Applier
@@ -11,11 +10,13 @@ class Rename:
         self.__applier = Applier(config_type)
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder, apply):
+    def exec(self, folder, apply=False):
         """Allow to clean folder elements' name"""
-        yield f"{folder} folder content will be clean"
+        yield f"Folder to clean: {folder}"
         current = Path(folder)
-        yield f"{current.count()} elements have been found"
+        yield f"Elements found in the folder: {current.count()}"
+        yield f" Files: {len(current.files())}"
+        yield f" Folders: {len(current.folders())}"
 
         change = 0
         skip = 0
@@ -23,14 +24,10 @@ class Rename:
         ignore = 0
 
         for file in current.files(True):
-            if os.path.splitext(file)[1] == ".json":
-                ignore = ignore + 1
-                continue
-
             new_file_name = self.__applier.apply_file_rules(file)
 
-            path = f"{folder}/{file}"
-            new_path = f"{folder}/{new_file_name}"
+            path = os.path.join(folder, file)
+            new_path = os.path.join(folder, new_file_name)
 
             if os.path.exists(new_path):
                 skip = skip + 1

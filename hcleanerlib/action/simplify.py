@@ -6,11 +6,12 @@ from hcleanerlib.utils.path import Path
 
 class Simplify:
     def __init__(self, config_type):
-        self.__parent: Path = None
+        self.__parent = None
         self.__explorer = Explorer(config_type)
 
     def exec(self, folder, apply=False):
-        """
+        """ Trigger function of the Simplify class.
+
         Crawl direct sub folders, extract videos when alone in folder, and remove empty folders.
         """
 
