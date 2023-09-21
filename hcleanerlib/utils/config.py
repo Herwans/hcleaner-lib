@@ -37,7 +37,7 @@ class Configuration:
         return self.configData["extensions"]["videos"]
 
     def get_delete_pattern(self):
-        return self.configData["to_delete"]
+        return self.configData["to-delete"]
 
     def get_videos_location(self):
         return self.configData["dispatch"]["videos"]
