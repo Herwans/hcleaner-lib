@@ -93,7 +93,12 @@ class Path:
         else:
             os.makedirs(destination, exist_ok=True)
             self.__fullpath = new_location
-            shutil.move(current, self.fullpath())
+            if self.is_dir():
+                shutil.copytree(current, self.fullpath())
+                shutil.rmtree(current)
+            else:
+                shutil.copy(current, self.fullpath())
+                os.remove(current)
 
     def name(self):
         return pathlib.Path(self.fullpath()).name

@@ -15,7 +15,7 @@ class Dispatch:
         current = Path(folder)
         for element in current.children():
             try:
-                self.__explorer.dispatch(Path(f"{current.fullpath()}{sep}{element}"))
+                self.__explorer.dispatch(Path(element))
             except ValueError:
                 logging.info(element + " skipped du to error")
                 logging.info(ValueError)

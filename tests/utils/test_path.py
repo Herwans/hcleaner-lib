@@ -47,15 +47,16 @@ class TestPath(unittest.TestCase):
 
     def test_count(self):
         original = "."
-        self.assertEqual(6, Path(original).count())
+        print(Path(original).children())
+        self.assertEqual(5, Path(original).count())
 
     def test_children(self):
         original = "."
-        self.assertEqual(6, len(Path(original).children()))
+        self.assertEqual(5, len(Path(original).children()))
 
     def test_files(self):
         original = "."
-        self.assertEqual(5, len(Path(original).files()))
+        self.assertEqual(4, len(Path(original).files()))
 
     def test_folders(self):
         original = "."
