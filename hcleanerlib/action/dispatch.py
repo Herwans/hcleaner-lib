@@ -16,6 +16,8 @@ class Dispatch:
         for element in current.children():
             try:
                 self.__explorer.dispatch(Path(element))
-            except ValueError:
-                logging.info(element + " skipped du to error")
+                yield f"{element} moved"
+            except (ValueError, FileExistsError):
+                yield f"{element} skipped due to error"
+                logging.info(element + " skipped due to error")
                 logging.info(ValueError)
