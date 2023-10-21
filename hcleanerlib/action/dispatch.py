@@ -11,11 +11,11 @@ class Dispatch:
         self.__parent = None
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder):
-        current = Path(folder)
-        for element in current.children():
+    def exec(self, source_folder_path):
+        source_folder = Path(source_folder_path)
+        for element in source_folder.children():
             try:
-                self.__explorer.dispatch(Path(f"{current.fullpath()}{sep}{element}"))
+                self.__explorer.dispatch(Path(element))
             except ValueError:
                 logging.info(element + " skipped du to error")
                 logging.info(ValueError)

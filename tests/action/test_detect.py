@@ -1,8 +1,6 @@
 import unittest
 
 from hcleanerlib.action.detect import Detect
-from hcleanerlib.utils.applier import Applier
-from hcleanerlib.utils.config import Configuration
 
 
 class TestDetect(unittest.TestCase):
