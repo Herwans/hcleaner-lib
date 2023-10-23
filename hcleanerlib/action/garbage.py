@@ -13,60 +13,62 @@ class Garbage:
         self.__explorer = Explorer(config_type)
         self.__to_delete = self.__config.get_delete_pattern()
 
-    def exec(self, folder, apply=False, subdirectories=False):
+    def exec(self, source_folder_path, apply=False, subdirectories=False):
         """Remove empty folders, delete unwanted elements"""
-        for log in self.__clean(folder, apply):
-            yield log
+
+        source_folder = Path(source_folder_path)
+        # TODO: refactor, as in the end, only on list can be returned
+        elements_to_delete = []
+        elements_deleted = []
+
+        # Clean the base folder
+        for element in self.__clean(source_folder_path):
+            elements_to_delete.append(element)
+
+        # Clean the different subdirectories found in the base folder
+        if subdirectories:
+            for folder in source_folder.folders():
+                for element in self.__clean(folder):
+                    elements_to_delete.append(element)
 
         if subdirectories:
-            for element in Path(folder).folders():
-                for log in self.__clean(element, apply):
-                    yield log
-                for log in self.__move(element, apply):
-                    yield log
-                self.__delete(element, apply)
+            for subdirectory in source_folder.folders():
+                sub = Path(subdirectory)
+                # Delete if empty
+                if sub.count() == 0:
+                    elements_to_delete.append(subdirectory)
+                else:
+                    count = 0
+                    for child in sub.children():
+                        if child in elements_to_delete:
+                            count = count + 1
+                        else:
+                            break
+                    if count == sub.count():
+                        elements_to_delete.append(subdirectory)
 
-    def __clean(self, folder, apply):
-        """Remove elements which match regex to be deleted"""
+        if apply:
+            for element in elements_to_delete:
+                if os.path.isdir(element):
+                    os.rmdir(element)
+                else:
+                    os.remove(element)
+                if os.path.exists(element) is False:
+                    elements_deleted.append(element)
+
+        for element in elements_deleted:
+            elements_to_delete.remove(element)
+
+        return {
+            "to_delete": elements_to_delete,
+            "deleted": elements_deleted
+        }
+
+    def __clean(self, folder):
+        """Yield element that should be deleted"""
         for element in Path(folder).files():
             if self.__is_to_delete(element):
-                if apply:
-                    os.remove(element)
-                    yield f"{element} deleted"
-                else:
-                    yield f"{element} is candidate to deletion"
-
-    def __move(self, folder, apply):
-        """Empty folder when no other files nor folders present"""
-        path = Path(folder)
-
-        if path.count() == 0 or len(path.folders()) > 0:
-            return
-        elements = path.files()
-        total = path.count()
-        videos = 0
-        for element in elements:
-            if self.__explorer.is_video(element):
-                videos = videos + 1
-
-        if videos == total:
-            if apply:
-                for element in elements:
-                    current = Path(element)
-                    if not pathlib.Path(f"{folder}{os.sep}..{os.sep}{current.name()}").exists():
-                        current.move(f"..{os.sep}{current.name()}")
-                if path.count() == 0:
-                    yield f"{folder} has been emptied"
-                else:
-                    yield f"{folder} can't be emptied"
-            else:
-                yield f"{folder} is candidate to simplification"
-
-    def __delete(self, folder, apply):
-        """Delete folder when empty"""
-        path = Path(folder)
-        if path.count() == 0 and apply:
-            self.__explorer.delete_folder(folder)
+                yield element
 
     def __is_to_delete(self, element):
         for pattern in self.__to_delete:
