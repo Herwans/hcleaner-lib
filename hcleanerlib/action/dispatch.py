@@ -7,11 +7,12 @@ from hcleanerlib.utils.path import Path
 
 
 class Dispatch:
+    """Move elements on a specific folder which match with them"""
     def __init__(self, config_type):
         self.__parent = None
         self.__explorer = Explorer(config_type)
 
-    def exec(self, source_folder_path):
+    def exec(self, source_folder_path: str):
         source_folder = Path(source_folder_path)
         for element in source_folder.children():
             try:

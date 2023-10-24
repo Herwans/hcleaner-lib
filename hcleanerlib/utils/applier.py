@@ -12,7 +12,7 @@ class Applier:
         altered_element = element
         for rule in self.__config.get_folder_rules():
             # 0 = Pattern
-            # 1 = Replacement
+            # 2 = Replacement
             altered_element = re.sub(rule[0], rule[1], altered_element)
         altered_element = altered_element.strip()
         return altered_element

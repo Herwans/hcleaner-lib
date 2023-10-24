@@ -8,15 +8,15 @@ class TestDetect(unittest.TestCase):
         detect = Detect("test")
         result = {
             "folders": {
-                "folder 1": [
-                    "folder 1 [test]",
-                    "[test] folder 1"
+                "folder 2": [
+                    "folder 2 [test]",
+                    "[test] folder 2"
                 ]
             },
             "files": {
-                "file 1.txt": [
-                    "file 1 [test].txt",
-                    "[test] file 1.txt"
+                "file 2.txt": [
+                    "file 2 [test].txt",
+                    "[test] file 2.txt"
 
                 ]
             }

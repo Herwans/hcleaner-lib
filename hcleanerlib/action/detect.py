@@ -8,7 +8,7 @@ class Detect:
     def __init__(self, config_type):
         self.__applier = Applier(config_type)
 
-    def exec(self, source_folder_path):
+    def exec(self, source_folder_path: str):
         source_folder = Path(source_folder_path)
 
         cleaned_folders = {}

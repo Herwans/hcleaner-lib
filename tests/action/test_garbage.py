@@ -4,7 +4,7 @@ import unittest
 from hcleanerlib.action.garbage import Garbage
 
 
-class TestDispatch(unittest.TestCase):
+class TestGarbage(unittest.TestCase):
     def test_exec(self):
         garbage = Garbage("test")
         path = ""
