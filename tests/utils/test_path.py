@@ -113,8 +113,8 @@ class TestPath(unittest.TestCase):
         self.assertFalse(os.path.exists(absolute_src))
 
     def test_move__folder(self):
-        absolute_src = os.path.join(os.getcwd(), "src4", "folder")
-        absolute_dst = os.path.join(os.getcwd(), "dst4", "folder")
+        absolute_src = os.path.join(os.getcwd(), "src4", "1")
+        absolute_dst = os.path.join(os.getcwd(), "dst4", "1")
         dest = "..\\dst4"
         os.makedirs(absolute_src, exist_ok=True)
         file = Path(absolute_src)
@@ -127,9 +127,9 @@ class TestPath(unittest.TestCase):
         self.assertFalse(os.path.exists(absolute_src))
 
     def test_move__folder_with_content(self):
-        absolute_src = os.path.join(os.getcwd(), "src5", "folder")
+        absolute_src = os.path.join(os.getcwd(), "src5", "1")
         absolute_src_file = os.path.join(absolute_src, "file.txt")
-        absolute_dst = os.path.join(os.getcwd(), "dst5", "folder")
+        absolute_dst = os.path.join(os.getcwd(), "dst5", "1")
         dest = "..\\dst5"
         os.makedirs(absolute_src, exist_ok=True)
         f = open(absolute_src_file, "a")

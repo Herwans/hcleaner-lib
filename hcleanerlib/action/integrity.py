@@ -10,7 +10,7 @@ from hcleanerlib.utils.path import Path
 
 
 class Integrity:
-    """Check the corruption percent per folder"""
+    """Check the corruption percent per 1"""
 
     def __init__(self, config_type):
         self.__explorer = Explorer(config_type)

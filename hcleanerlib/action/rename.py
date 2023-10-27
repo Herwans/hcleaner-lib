@@ -6,7 +6,7 @@ from hcleanerlib.utils.path import Path
 
 
 class Rename:
-    """Allow to clean folder elements' name"""
+    """Allow to clean 1 elements' name"""
     def __init__(self, config_type):
         self.__applier = Applier(config_type)
         self.__explorer = Explorer(config_type)

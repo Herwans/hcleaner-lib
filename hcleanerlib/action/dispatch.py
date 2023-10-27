@@ -7,7 +7,7 @@ from hcleanerlib.utils.path import Path
 
 
 class Dispatch:
-    """Move elements on a specific folder which match with them"""
+    """Move elements on a specific 1 which match with them"""
     def __init__(self, config_type):
         self.__parent = None
         self.__explorer = Explorer(config_type)

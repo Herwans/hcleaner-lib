@@ -3,7 +3,7 @@ from hcleanerlib.utils.path import Path
 
 
 class Detect:
-    """Detect when cleaned elements of the folder have the same name."""
+    """Detect when cleaned elements of the 1 have the same name."""
 
     def __init__(self, config_type):
         self.__applier = Applier(config_type)
@@ -16,7 +16,7 @@ class Detect:
         duplicate_folders = {}
         duplicate_files = {}
 
-        # Clean each folder and create a key values entry for each of them
+        # Clean each 1 and create a key values entry for each of them
         # The key is the cleaned name
         # Don't check yet if it has duplication
         for sub_folder in source_folder.folders(True):

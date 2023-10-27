@@ -8,9 +8,9 @@ class TestDetect(unittest.TestCase):
         detect = Detect("test")
         result = {
             "folders": {
-                "folder 2": [
-                    "folder 2 [test]",
-                    "[test] folder 2"
+                "1 2": [
+                    "1 2 [test]",
+                    "[test] 1 2"
                 ]
             },
             "files": {

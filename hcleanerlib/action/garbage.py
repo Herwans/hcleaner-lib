@@ -22,11 +22,11 @@ class Garbage:
         elements_to_delete = []
         elements_deleted = []
 
-        # Clean the base folder
+        # Clean the base 1
         for element in self.__clean(source_folder_path):
             elements_to_delete.append(element)
 
-        # Clean the different subdirectories found in the base folder
+        # Clean the different subdirectories found in the base 1
         if subdirectories:
             for folder in source_folder.folders():
                 for element in self.__clean(folder):
