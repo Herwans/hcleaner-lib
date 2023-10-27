@@ -5,54 +5,57 @@ from hcleanerlib.utils.path import Path
 
 
 class Simplify:
+    """Crawl direct sub folders, extract videos when alone in 1, and remove empty folders."""
+
     def __init__(self, config_type):
-        self.__parent = None
+        self.__source_folder = None
         self.__explorer = Explorer(config_type)
 
-    def exec(self, folder, apply=False):
-        """ Trigger function of the Simplify class.
-
-        Crawl direct sub folders, extract videos when alone in folder, and remove empty folders.
-        """
-
-        self.__parent = Path(folder)
-        for child_folder in self.__parent.folders():
-            for log in self.__extract_folder(child_folder, apply):
-                yield log
-            for log in self.__extract_video(child_folder, apply):
-                yield log
-            for log in self.__delete_when_empty(child_folder, apply):
-                yield log
-
-    def __extract_video(self, folder, apply):
-        current = Path(folder)
-        if self.__explorer.is_video_only(current.fullpath()):
-            if apply is False:
-                yield current.name() + " is video only, it can be emptied"
-            else:
-                for video in current.files():
-                    v = Path(video)
-                    try:
-                        v.move(self.__parent.fullpath())
-                        yield f"{video} has been moved to {v.fullpath()}"
-                    except:
-                        yield f"{video} already exists in {self.__parent.fullpath()}, can't be move"
-
-    def __extract_folder(self, folder, apply):
-        current = Path(folder)
-        if current.count() == 1 and len(current.folders()) == 1:
-            if current.name() == Path(current.folders()[0]).name():
-                if apply is False:
-                    yield f"{current.name()} has a folder with the same name, it can be simplified"
+    def exec(self, source_folder_path: str, apply: bool = False):
+        result = {"extractable": [], "extracted": [], "error": [], "deletable": [], "deleted": []}
+        self.__source_folder = Path(source_folder_path)
+        for subdirectory in self.__source_folder.folders():
+            current = Path(subdirectory)
+            if self.__explorer.is_video_only(current.fullpath()):
+                if apply:
+                    extracted, error = self.__extract_video(current)
+                    result["extracted"] = result["extracted"] + extracted
+                    result["error"] = result["error"] + error
                 else:
-                    Path(current.folders()[0]).move(self.__parent.fullpath(), True)
-                    yield current.name() + " has been moved into its parent"
+                    result["extractable"].append(current.fullpath())
+            elif self.__is_extractable_folder(current):
+                if apply:
+                    Path(current.folders()[0]).move(self.__source_folder.fullpath(), True)
+                    result["extracted"].append(current.fullpath())
+                else:
+                    result["extractable"].append(current.fullpath())
 
-    def __delete_when_empty(self, folder, apply):
-        current = Path(folder)
-        if current.count() == 0:
-            if apply is False:
-                yield current.name() + " is empty, can be delete"
-            else:
-                self.__explorer.delete_folder(current.fullpath())
-                yield current.name() + " has been deleted"
+            if (current.count() == 0 or
+                    (self.__is_extractable_folder(current) is False and
+                     current.fullpath() in result["extractable"])):
+                if apply is False:
+                    result["deletable"].append(current.fullpath())
+                else:
+                    self.__explorer.delete_folder(current.fullpath())
+                    result["deleted"].append(current.fullpath())
+
+        return result
+
+    def __extract_video(self, current_folder: Path):
+        extracted = []
+        error = []
+        for video in current_folder.files():
+            v = Path(video)
+            try:
+                v.move(self.__source_folder.fullpath())
+                extracted.append(v.fullpath())
+            except:
+                error.append(v.fullpath())
+
+        return extracted, error
+
+    @staticmethod
+    def __is_extractable_folder(current_folder: Path):
+        return (current_folder.count() == 1 and
+                len(current_folder.folders()) == 1 and
+                current_folder.name() == Path(current_folder.folders()[0]).name())

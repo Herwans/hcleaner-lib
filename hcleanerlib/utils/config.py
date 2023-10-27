@@ -22,7 +22,7 @@ class Configuration:
             Exception("No rules found")
 
     def get_folder_rules(self):
-        return self.configData['folder-rules']
+        return self.configData['1-rules']
 
     def get_file_rules(self):
         return self.configData['file-rules']
