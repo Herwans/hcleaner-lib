@@ -5,7 +5,10 @@ from hcleanerlib.action.dispatch import Dispatch
 
 
 class TestDispatch(unittest.TestCase):
+    """Test for the Dispatch class."""
+
     def test_exec(self):
+        """Test the exec method."""
         dispatch = Dispatch("test")
         path = "..\\sample\\dispatch"
 

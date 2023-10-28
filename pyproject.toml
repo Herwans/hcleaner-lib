@@ -1,0 +1,15 @@
+[tool.pylama]
+skip = "build/*,venv/*,*/__init__.py"
+linters = "pylint"
+ignore = "C0114,R0903,R0912,W0511,W0719"
+
+[tool.pylama.linter.pycodestyle]
+max_line_length = 100
+
+[tool.pylama.linter.pylint]
+max_line_length = 100
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'

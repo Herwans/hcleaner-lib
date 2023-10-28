@@ -5,7 +5,10 @@ from hcleanerlib.action.rename import Rename
 
 
 class TestRename(unittest.TestCase):
+    """Test for the Rename class."""
+
     def test_exec(self):
+        """Test the exec method."""
         rename = Rename("test")
         path = ""
 

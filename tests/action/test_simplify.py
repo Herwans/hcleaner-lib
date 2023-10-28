@@ -5,9 +5,12 @@ from hcleanerlib.action.simplify import Simplify
 
 
 class TestSimplify(unittest.TestCase):
+    """Test for the Simplify class."""
+
     def test_exec(self):
+        """Test the exec method."""
         simplify = Simplify("test")
-        path = "D:\\dev\\herwans\\hcleaner-lib\\tests\\sample\\simplify"
+        path = ""
 
         self.assertTrue(os.path.exists(os.path.join(path, "1")))
         self.assertTrue(os.path.exists(os.path.join(path, "1", "file.mp4")))
@@ -19,12 +22,13 @@ class TestSimplify(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(path, "folder", "folder", "thing.jpg")))
 
         # No apply
-        expectation = {"extractable": [
-            os.path.join(path, "1"),
-            os.path.join(path, "folder")
-        ], "extracted": [], "error": [], "deletable": [os.path.join(path, "1")], "deleted": [
-
-        ]}
+        expectation = {
+            "extractable": [os.path.join(path, "1"), os.path.join(path, "folder")],
+            "extracted": [],
+            "error": [],
+            "deletable": [os.path.join(path, "1")],
+            "deleted": [],
+        }
         result = simplify.exec(path, False)
 
         self.assertEqual(expectation, result)
@@ -45,9 +49,7 @@ class TestSimplify(unittest.TestCase):
             "extracted": [os.path.join(path, "file.mp4"), os.path.join(path, "folder")],
             "error": [],
             "deletable": [],
-            "deleted": [
-                os.path.join(path, "1")
-            ]
+            "deleted": [os.path.join(path, "1")],
         }
         result = simplify.exec(path, True)
 
@@ -61,4 +63,3 @@ class TestSimplify(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(path, "folder")))
         self.assertFalse(os.path.exists(os.path.join(path, "folder", "folder")))
         self.assertTrue(os.path.exists(os.path.join(path, "folder", "thing.jpg")))
-

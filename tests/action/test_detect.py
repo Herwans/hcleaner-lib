@@ -4,21 +4,13 @@ from hcleanerlib.action.detect import Detect
 
 
 class TestDetect(unittest.TestCase):
+    """Test for the Detect class."""
+
     def test_exec(self):
+        """Test the exec method."""
         detect = Detect("test")
         result = {
-            "folders": {
-                "1 2": [
-                    "1 2 [test]",
-                    "[test] 1 2"
-                ]
-            },
-            "files": {
-                "file 2.txt": [
-                    "file 2 [test].txt",
-                    "[test] file 2.txt"
-
-                ]
-            }
+            "folders": {"folder 1": ["folder 1 [test]", "[test] folder 1"]},
+            "files": {"file 1.txt": ["file 1 [test].txt", "[test] file 1.txt"]},
         }
-        self.assertEqual(result, detect.exec("..\\sample"))
+        self.assertEqual(result, detect.exec("..\\sample\\detect"))
