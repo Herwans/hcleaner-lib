@@ -1,18 +1,24 @@
-import shutil
-
 from hcleanerlib.utils.explorer import Explorer
 from hcleanerlib.utils.path import Path
 
 
 class Simplify:
-    """Crawl direct sub folders, extract videos when alone in 1, and remove empty folders."""
+    """Crawl direct sub folders, extract videos when alone in folder, and remove empty folders."""
 
     def __init__(self, config_type):
         self.__source_folder = None
         self.__explorer = Explorer(config_type)
 
     def exec(self, source_folder_path: str, apply: bool = False):
-        result = {"extractable": [], "extracted": [], "error": [], "deletable": [], "deleted": []}
+        """Execute the class behavior."""
+        result: dict[str, list] = {
+            "extractable": [],
+            "extracted": [],
+            "error": [],
+            "deletable": [],
+            "deleted": [],
+        }
+
         self.__source_folder = Path(source_folder_path)
         for subdirectory in self.__source_folder.folders():
             current = Path(subdirectory)
@@ -30,9 +36,10 @@ class Simplify:
                 else:
                     result["extractable"].append(current.fullpath())
 
-            if (current.count() == 0 or
-                    (self.__is_extractable_folder(current) is False and
-                     current.fullpath() in result["extractable"])):
+            if current.count() == 0 or (
+                self.__is_extractable_folder(current) is False
+                and current.fullpath() in result["extractable"]
+            ):
                 if apply is False:
                     result["deletable"].append(current.fullpath())
                 else:
@@ -49,13 +56,15 @@ class Simplify:
             try:
                 v.move(self.__source_folder.fullpath())
                 extracted.append(v.fullpath())
-            except:
+            except FileNotFoundError:
                 error.append(v.fullpath())
 
         return extracted, error
 
     @staticmethod
     def __is_extractable_folder(current_folder: Path):
-        return (current_folder.count() == 1 and
-                len(current_folder.folders()) == 1 and
-                current_folder.name() == Path(current_folder.folders()[0]).name())
+        return (
+            current_folder.count() == 1
+            and len(current_folder.folders()) == 1
+            and current_folder.name() == Path(current_folder.folders()[0]).name()
+        )

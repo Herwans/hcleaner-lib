@@ -1,21 +1,17 @@
-import json
-import logging
-import os
-import pathlib
 import shutil
-from datetime import datetime
 
 from hcleanerlib.utils.explorer import Explorer
 from hcleanerlib.utils.path import Path
 
 
 class Integrity:
-    """Check the corruption percent per 1"""
+    """Check the corruption percent per folder."""
 
-    def __init__(self, config_type):
+    def __init__(self, config_type: str):
         self.__explorer = Explorer(config_type)
 
     def exec(self, source_folder_path: str, delete_corrupted: bool, recursive: bool):
+        """Execute the class behavior."""
         source_folder = Path(source_folder_path)
 
         corruption = {}
@@ -37,7 +33,7 @@ class Integrity:
 
         return corruption
 
-    def __get_corrupted_count(self, folder):
+    def __get_corrupted_count(self, folder: Path):
         corrupted = 0
         for file in folder.files():
             if self.__explorer.is_image(file) and self.__explorer.is_image_corrupted(file):

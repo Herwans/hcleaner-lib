@@ -3,7 +3,9 @@ import pathlib
 
 
 class Configuration:
-    configData = None
+    """Class which manage application configuration"""
+
+    config_data = None
 
     def __init__(self, config_type):
         path = None
@@ -15,33 +17,40 @@ class Configuration:
             path = "config.json"
 
         if path is not None:
-            with open(path, 'r') as f:
+            with open(path, "r", encoding="UTF-8") as f:
                 data = json.load(f)
-                self.configData = data[config_type]
+                self.config_data = data[config_type]
         else:
-            Exception("No rules found")
+            raise Exception("No rules found")
 
     def get_folder_rules(self):
-        return self.configData['1-rules']
+        """Retrieve folders applicable rules"""
+        return self.config_data["folder-rules"]
 
     def get_file_rules(self):
-        return self.configData['file-rules']
+        """Retrieve files applicable rules"""
+        return self.config_data["file-rules"]
 
     def get_extension_sets(self):
-        return self.configData['extension-set']
+        """Retrieve the extensions sets"""
+        return self.config_data["extension-set"]
 
     def get_image_extensions(self):
-        return self.configData["extensions"]["images"]
+        """Get the extensions used for images"""
+        return self.config_data["extensions"]["images"]
 
     def get_videos_extensions(self):
-        return self.configData["extensions"]["videos"]
+        """Get the extensions used for videos"""
+        return self.config_data["extensions"]["videos"]
 
     def get_delete_pattern(self):
-        return self.configData["to-delete"]
+        """Get the pattern to delete"""
+        return self.config_data["to-delete"]
 
     def get_videos_location(self):
-        return self.configData["dispatch"]["videos"]
+        """Get the video's target location for dispatch"""
+        return self.config_data["dispatch"]["videos"]
 
     def get_images_location(self):
-        return self.configData["dispatch"]["images"]
-
+        """Get the image's target location for dispatch"""
+        return self.config_data["dispatch"]["images"]

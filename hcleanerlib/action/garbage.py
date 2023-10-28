@@ -1,24 +1,21 @@
 import os
-import pathlib
 import re
 
 from hcleanerlib.utils.config import Configuration
-from hcleanerlib.utils.explorer import Explorer
 from hcleanerlib.utils.path import Path
 
 
 class Garbage:
-    """Remove empty folders, delete unwanted elements"""
+    """Remove empty folders, delete unwanted elements."""
 
-    def __init__(self, config_type):
+    def __init__(self, config_type: str):
         self.__config = Configuration(config_type)
-        self.__explorer = Explorer(config_type)
         self.__to_delete = self.__config.get_delete_pattern()
 
     def exec(self, source_folder_path: str, apply: bool = False, subdirectories: bool = False):
-
+        """Execute the class behavior."""
         source_folder = Path(source_folder_path)
-        # TODO: refactor, as in the end, only on list can be returned
+        # TODO: refactor, as in the end, only one list can be returned
         elements_to_delete = []
         elements_deleted = []
 
@@ -60,18 +57,15 @@ class Garbage:
         for element in elements_deleted:
             elements_to_delete.remove(element)
 
-        return {
-            "to_delete": elements_to_delete,
-            "deleted": elements_deleted
-        }
+        return {"to_delete": elements_to_delete, "deleted": elements_deleted}
 
-    def __clean(self, folder):
-        """Yield element that should be deleted"""
+    def __clean(self, folder: str):
+        """Yield element that should be deleted."""
         for element in Path(folder).files():
             if self.__is_to_delete(element):
                 yield element
 
-    def __is_to_delete(self, element):
+    def __is_to_delete(self, element: str):
         for pattern in self.__to_delete:
             if re.search(pattern, element) is not None:
                 return True

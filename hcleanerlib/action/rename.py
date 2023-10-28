@@ -1,25 +1,20 @@
 import os
 
 from hcleanerlib.utils.applier import Applier
-from hcleanerlib.utils.explorer import Explorer
 from hcleanerlib.utils.path import Path
 
 
 class Rename:
-    """Allow to clean 1 elements' name"""
-    def __init__(self, config_type):
-        self.__applier = Applier(config_type)
-        self.__explorer = Explorer(config_type)
+    """Allow to clean folder elements' name."""
 
-    def exec(self, source_folder_path, apply=False):
+    def __init__(self, config_type: str):
+        self.__applier = Applier(config_type)
+
+    def exec(self, source_folder_path: str, apply=False):
+        """Execute the class behavior."""
         source_folder = Path(source_folder_path)
 
-        result = {
-            "changed": {},
-            "skipped": [],
-            "error": [],
-            "ignore": []
-        }
+        result: dict = {"changed": {}, "skipped": [], "error": [], "ignore": []}
 
         for current_file in source_folder.files(True):
             new_file_name = self.__applier.apply_file_rules(current_file)
